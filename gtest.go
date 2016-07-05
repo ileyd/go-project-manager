@@ -79,7 +79,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 func newHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		err := templates.Execute(w, "new.html")
+		err := templates.ExecuteTemplate(w, "new.html", "")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -113,7 +113,7 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		err := templates.Execute(w, "login.html")
+		err := templates.ExecuteTemplate(w, "login.html", "")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
