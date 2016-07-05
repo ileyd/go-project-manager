@@ -26,7 +26,7 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
-var templates = template.Must(template.ParseFiles("index.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html"))
 
 type Tests struct {
 	ID              string `json:"id"`
@@ -66,7 +66,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		b.Tests = append(b.Tests, res)
 	}
 
-	err = templates.ExecuteTemplate(w, "index.html", &b)
+	err = templates.ExecuteTemplate(w, "templates/orders.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
