@@ -42,15 +42,13 @@
 					<th>Due date</th>
 					<th>Completed</th>
 					<th>status</th>
-					<th>del</th>
-					<th>modify</th>
 				</thead>
 				<tbody>
 					{{ range .Tests}}
 						<tr>
 							<td>{{.ID}}</td>
 							<td>{{.Company}}</td>
-							<td>{{.Email}}</td>
+							<td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
 							<td>{{.Material}}</td>
 							<td>{{.Process}}</td>
 							<td>{{.Samples}}</td>
@@ -62,8 +60,6 @@
 							<td>{{.DueDate}}</td>
 							<td>{{.Completion}}</td>
 							<td>{{.Status}}</td>
-							<td><a class="btn btn-raised btn-danger btn-xs" href="/del/{{.ID}}">Del</a><td>
-							<td><a class="btn btn-raised btn-info btn-xs" href="/modify/{{.ID}}">Mod</a><td>
 						</tr>
 					{{end}}
 				</tbody>
