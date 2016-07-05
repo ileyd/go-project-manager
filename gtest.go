@@ -69,7 +69,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		b.Tests = append(b.Tests, res)
 	}
 
-	err = templates.ExecuteTemplate(w, "templates/orders.html", &b)
+	err = templates.ExecuteTemplate(w, "orders.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -94,7 +94,7 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		err := templates.ExecuteTemplate(w, "templates/login.html", "")
+		err := templates.ExecuteTemplate(w, "login.html", "")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -127,7 +127,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		err := templates.ExecuteTemplate(w, "templates/register.html", "")
+		err := templates.ExecuteTemplate(w, "register.html", "")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -163,7 +163,7 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 }
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates.ExecuteTemplate(w, "templates/index.html", "")
+	err := templates.ExecuteTemplate(w, "index.html", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
