@@ -14,3 +14,11 @@ CREATE TABLE `tests` (
   `status` longtext,
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `users` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `email` longtext,
+  `password` longtext,
+  `level` int(3),
+  PRIMARY KEY (`id`)
+);
