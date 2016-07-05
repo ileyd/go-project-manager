@@ -29,6 +29,7 @@ const (
 var templates = template.Must(template.ParseFiles("assets/paste.html", "assets/index.html", "assets/clone.html"))
 
 type Tests struct {
+	ID              string `json:"id"`
 	Company         string `json:"company"`
 	Email           string `json:"email"`
 	Material        string `json:"material"`
@@ -61,7 +62,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
-		rows.Scan(&res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
 		b.Tests = append(b.Tests, res)
 	}
 
@@ -71,9 +72,36 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func newHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+}
+
+func delHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+}
+
+func putHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+}
+
 func main() {
 
 	router := mux.NewRouter()
+	router.HandleFunc("/new", newHandler)
+	router.HandleFunc("/del", delHandler)
+	router.HandleFunc("/put", putHandler)
 	router.HandleFunc("/", rootHandler)
 	err := http.ListenAndServe(PORT, router)
 	if err != nil {
