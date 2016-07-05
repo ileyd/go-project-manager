@@ -49,7 +49,7 @@ type Page struct {
 	Tests []Tests `json:"data"`
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
@@ -111,6 +111,8 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 }
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+}
 func statusUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
@@ -127,6 +129,7 @@ func main() {
 	router.HandleFunc("/put", putHandler)
 	router.HandleFunc("/login", loginHandler)
 	router.HandleFunc("/register", registerHandler)
+	router.HandleFunc("/orders", ordersHandler)
 	router.HandleFunc("/", rootHandler)
 	err := http.ListenAndServe(PORT, router)
 	if err != nil {
