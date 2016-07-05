@@ -26,7 +26,7 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
-var templates = template.Must(template.ParseFiles("assets/paste.html", "assets/index.html", "assets/clone.html"))
+var templates = template.Must(template.ParseFiles("index.html"))
 
 type Tests struct {
 	ID              string `json:"id"`
