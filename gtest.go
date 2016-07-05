@@ -116,7 +116,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	case "POST":
 		email := r.FormValue("email")
-		password := r.FormValue("email")
+		password := r.FormValue("password")
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
