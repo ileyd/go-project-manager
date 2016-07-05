@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -64,7 +63,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		res := Tests{}
 		rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
-		fmt.Println(res)
 		b.Tests = append(b.Tests, res)
 	}
 
