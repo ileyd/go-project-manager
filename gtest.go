@@ -2,9 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"html"
 	"html/template"
 	"log"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gorilla/mux"
 	// mysql driver
@@ -97,11 +100,34 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
+	switch r.Method {
+	case "GET":
+		err := templates.ExecuteTemplate(w, "templates/register.html", "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	case "POST":
+		email := r.FormValue("email")
+		password := r.FormValue("email")
+		db, err := sql.Open("mysql", DATABASE)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
+		smt, err := db.Prepare("insert into user(email, password) values(?. ?)")
+		if err != nil {
+			log.Println(err)
+		}
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println(err)
+		}
+		_, err = smt.Exec(html.EscapeString(email), hashedPassword)
+		if err != nil {
+			log.Println(err)
+		}
+
 	}
-	defer db.Close()
 
 }
 func putHandler(w http.ResponseWriter, r *http.Request) {
