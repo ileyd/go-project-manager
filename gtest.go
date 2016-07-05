@@ -45,7 +45,7 @@ type Tests struct {
 }
 
 type Page struct {
-	Tests []Tests
+	Tests []Tests `json:"data"`
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +54,16 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
+	rows, err := db.Query("select * from tests")
+	if err != nil {
+		log.Println(err)
+	}
+	b := Page{Tests: []Tests{}}
+	for rows.Next() {
+		res := Tests{}
+		rows.Scan(&res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		b.Tests = append(b.Tests, res)
+	}
 
 	err = templates.ExecuteTemplate(w, "index.html", &b)
 	if err != nil {
