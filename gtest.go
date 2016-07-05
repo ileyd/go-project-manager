@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html"
 	"html/template"
 	"log"
@@ -76,6 +77,16 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newHandler(w http.ResponseWriter, r *http.Request) {
+	company := r.FormValue("company")
+	email := r.FormValue("email")
+	material := r.FormValue("material")
+	process := r.FormValue("process")
+	samples := r.FormValue("samples")
+	testfile := r.FormValue("files")
+	machine := r.FormValue("machine")
+	requestedby := r.FormValue("requestedby")
+	duedate := r.FormValue("duedate")
+	fmt.Println(company, email, material, process, samples, testfile, machine, requestedby, duedate)
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
