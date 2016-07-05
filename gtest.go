@@ -99,11 +99,28 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	case "POST":
+		email := r.FormValue("email")
+		password := r.FormValue("password")
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
 		}
 		defer db.Close()
+		var hashedPassword string
+		err = db.QueryRow("select password from users where email=?", html.EscapeString(email)).Scan(&hashedPassword)
+		if err == sql.ErrNoRows {
+			http.Redirect(w, r, "/register" 303)
+		}
+		if err != nil {
+			log.Println(err)
+
+		}
+		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+		if err != nil {
+			log.Println(err)
+
+		}
+
 	}
 
 }
