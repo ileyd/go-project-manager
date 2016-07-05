@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-		<title>Tests</title>
+		<title>Modify</title>
 
 		<!-- Material Design fonts -->
 		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
@@ -26,6 +26,79 @@
 	</head>
 	<body>
 		<div class="container">
+			<div class="well bs-component">
+				<form class="form-horizontal" action="/new" method="POST">
+					<fieldset>
+						<legend>New</legend>
+						<div class="form-group is-empty">
+							<label for="inputCompany" class="col-md-2 control-label">Company</label>
+
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="inputCompany" placeholder="Company" required name="company">
+							</div>
+						</div>
+
+						<div class="form-group is-empty">
+							<label for="inputEmail" class="col-md-2 control-label">Email</label>
+
+							<div class="col-md-10">
+								<input type="email" class="form-control" id="inputEmail" placeholder="Email" required name="email">
+							</div>
+						</div>
+						<div class="form-group is-empty">
+							<label for="inputMaterial" class="col-md-2 control-label">Material</label>
+
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="inputMaterial" placeholder="Material" required name="material">
+							</div>
+						</div>
+
+						<div class="form-group is-empty">
+							<label for="inputProcess" class="col-md-2 control-label">Process</label>
+
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="inputProcess" placeholder="Process" required name="process">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="selectSamples" class="col-md-2 control-label">Samples Provided</label>
+
+							<div class="col-md-10">
+								<select id="selectSamples" class="form-control" name="samples">
+									<option>true</option>
+									<option>false</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group is-empty is-fileinput">
+							<label for="inputFile" class="col-md-2 control-label">File</label>
+
+							<div class="col-md-10">
+								<input type="text" readonly="" class="form-control" placeholder="Browse...">
+								<input type="file" id="inputFile" multiple="" name="files">
+							</div>
+						</div>
+						<div class="form-group is-empty">
+							<label for="inputRequest" class="col-md-2 control-label">Name</label>
+
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="inputRequest" placeholder="Name" required name="requestedby">
+							</div>
+						</div>
+						<div class="form-group is-empty">
+							<label for="inputDate" class="col-md-2 control-label">Due date</label>
+
+							<div class="col-md-10">
+								<input type="date" class="form-control" id="inputDate" required name="date">
+							</div>
+						</div>
+
+						<div class="col-md-10 col-md-offset-2">
+							<button type="submit" class="btn btn-primary">Submit<div class="ripple-container"></div></button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
 		</div>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
