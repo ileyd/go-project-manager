@@ -92,11 +92,19 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
+	switch r.Method {
+	case "GET":
+		err := templates.ExecuteTemplate(w, "templates/login.html", "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	case "POST":
+		db, err := sql.Open("mysql", DATABASE)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
 	}
-	defer db.Close()
 
 }
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -138,6 +146,11 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 }
 func rootHandler(w http.ResponseWriter, r *http.Request) {
+	err := templates.ExecuteTemplate(w, "templates/index.html", "")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
 }
 func statusUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", DATABASE)
@@ -151,8 +164,8 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/new", newHandler)
-	router.HandleFunc("/del", delHandler)
-	router.HandleFunc("/put", putHandler)
+	router.HandleFunc("/del/{id}", delHandler)
+	router.HandleFunc("/put/{id}", putHandler)
 	router.HandleFunc("/login", loginHandler)
 	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/orders", ordersHandler)
