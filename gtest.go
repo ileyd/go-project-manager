@@ -1,14 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
-	//	"database/sql"
 
 	"github.com/gorilla/mux"
 	// mysql driver
-	//	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -28,8 +28,34 @@ const (
 
 var templates = template.Must(template.ParseFiles("assets/paste.html", "assets/index.html", "assets/clone.html"))
 
+type Tests struct {
+	Company         string `json:"company"`
+	Email           string `json:"email"`
+	Material        string `json:"material"`
+	Process         string `json:"process"`
+	Samples         bool   `json"samples"`
+	TestFile        bool   `json:"testfile"`
+	SamplesRecieved string `json:"SamplesRecieved"`
+	Machine         string `json:"machine"`
+	RequestedBy     string `json:"RequestedBy"`
+	PerformedBy     string `json:"PerformedBy"`
+	DueDate         string `json:"DueDate"`
+	Completion      string `json:"Completion"`
+	Status          string `json:"Status"`
+}
+
+type Page struct {
+	Tests []Tests
+}
+
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates.Execute(w, "index.html")
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+
+	err = templates.ExecuteTemplate(w, "index.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
