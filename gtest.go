@@ -109,7 +109,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		var hashedPassword string
 		err = db.QueryRow("select password from users where email=?", html.EscapeString(email)).Scan(&hashedPassword)
 		if err == sql.ErrNoRows {
-			http.Redirect(w, r, "/register" 303)
+			http.Redirect(w, r, "/register", 303)
 		}
 		if err != nil {
 			log.Println(err)
