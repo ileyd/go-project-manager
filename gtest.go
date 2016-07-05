@@ -88,7 +88,30 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 }
 
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+
+}
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+
+}
 func putHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+}
+func statusUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
@@ -102,6 +125,8 @@ func main() {
 	router.HandleFunc("/new", newHandler)
 	router.HandleFunc("/del", delHandler)
 	router.HandleFunc("/put", putHandler)
+	router.HandleFunc("/login", loginHandler)
+	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/", rootHandler)
 	err := http.ListenAndServe(PORT, router)
 	if err != nil {
