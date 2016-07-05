@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -21,7 +22,7 @@ const (
 	// PASS database password
 	PASS = ""
 	// NAME database name
-	NAME = ""
+	NAME = "tests"
 	// DATABASE connection String
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
@@ -55,7 +56,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select * from tests")
+	rows, err := db.Query("select id, company, email, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests")
 	if err != nil {
 		log.Println(err)
 	}
@@ -63,6 +64,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		res := Tests{}
 		rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		fmt.Println(res)
 		b.Tests = append(b.Tests, res)
 	}
 
