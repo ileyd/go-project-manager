@@ -77,21 +77,29 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newHandler(w http.ResponseWriter, r *http.Request) {
-	company := r.FormValue("company")
-	email := r.FormValue("email")
-	material := r.FormValue("material")
-	process := r.FormValue("process")
-	samples := r.FormValue("samples")
-	testfile := r.FormValue("files")
-	machine := r.FormValue("machine")
-	requestedby := r.FormValue("requestedby")
-	duedate := r.FormValue("duedate")
-	fmt.Println(company, email, material, process, samples, testfile, machine, requestedby, duedate)
-	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
+	switch r.Method {
+	case "GET":
+		err := templates.Execute(w, "new.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	case "POST":
+		company := r.FormValue("company")
+		email := r.FormValue("email")
+		material := r.FormValue("material")
+		process := r.FormValue("process")
+		samples := r.FormValue("samples")
+		testfile := r.FormValue("files")
+		machine := r.FormValue("machine")
+		requestedby := r.FormValue("requestedby")
+		duedate := r.FormValue("duedate")
+		fmt.Println(company, email, material, process, samples, testfile, machine, requestedby, duedate)
+		db, err := sql.Open("mysql", DATABASE)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
 	}
-	defer db.Close()
 }
 
 func delHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +113,7 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		err := templates.ExecuteTemplate(w, "login.html", "")
+		err := templates.Execute(w, "login.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
