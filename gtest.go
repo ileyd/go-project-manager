@@ -63,14 +63,12 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	b := Page{Tests: []Tests{}}
+	res := Tests{}
 	for rows.Next() {
-		res := Tests{}
 		rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
-		b.Tests = append(b.Tests, res)
 	}
 
-	err = templates.ExecuteTemplate(w, "orders.html", &b)
+	err = templates.ExecuteTemplate(w, "orders.html", &res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -191,7 +189,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 func putHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["ID"]
+	id := vars["id"]
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
@@ -201,16 +199,12 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 
 	case "GET":
-		rows, err := db.Query("select company, email, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests where id=?", html.EscapeString(id))
+		res := Tests{}
+		err = db.QueryRow("select id, company, email, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests where id=?", html.EscapeString(id)).Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
 		if err != nil {
 			log.Println(err)
 		}
-		b := Page{Tests: []Tests{}}
-		for rows.Next() {
-			res := Tests{}
-			rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
-		}
-		err = templates.ExecuteTemplate(w, "modify.html", &b)
+		err = templates.ExecuteTemplate(w, "modify.html", &res)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
