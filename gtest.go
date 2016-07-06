@@ -198,8 +198,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		var hashedPassword string
-		err = db.QueryRow("select password from users where email=?", html.EscapeString(email)).Scan(&hashedPassword)
+		var hashedPassword, level string
+		err = db.QueryRow("select password, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &level)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/login", 303)
 		}
@@ -214,7 +214,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		value := map[string]string{
 			"email": email,
-			"level": "admin",
+			"level": level,
 		}
 		if encoded, err := cookieHandler.Encode("session", value); err == nil {
 			cookie := &http.Cookie{
@@ -223,6 +223,43 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 				Path:  "/",
 			}
 			http.SetCookie(w, cookie)
+		}
+
+	}
+
+}
+func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", 302)
+	}
+	switch r.Method {
+	case "GET":
+		err := templates.ExecuteTemplate(w, "company.html", "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	case "POST":
+		email := r.FormValue("email")
+		name := r.FormValue("name")
+		company := r.FormValue("company")
+		phone := r.FormValue("phone")
+		address := r.FormValue("address")
+		db, err := sql.Open("mysql", DATABASE)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
+		smt, err := db.Prepare("insert into users(email, company, contactname, phone, address) values(?, ?, ?, ?, ?)")
+		if err != nil {
+			log.Println(err)
+		}
+		if err != nil {
+			log.Println(err)
+		}
+		_, err = smt.Exec(html.EscapeString(email), html.EscapeString(company), html.EscapeString(name), html.EscapeString(phone), html.EscapeString(address))
+		if err != nil {
+			log.Println(err)
 		}
 
 	}
@@ -248,7 +285,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		smt, err := db.Prepare("insert into users(email, password, company, contactname, phone, address, level) values(?, ?, ?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into users(email, password, level) values(?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
@@ -302,6 +339,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/new", newHandler)
+	router.HandleFunc("/newcompany", newcompanyHandler)
 	router.HandleFunc("/done/{id}", doneHandler)
 	router.HandleFunc("/put/{id}", putHandler)
 	router.HandleFunc("/customer/{id}", customerHandler)

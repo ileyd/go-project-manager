@@ -29,6 +29,7 @@ CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `email` longtext,
   `password` longtext,
+  `name` longtext
   `level` longtext,
   PRIMARY KEY (`id`)
 );
