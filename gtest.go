@@ -190,11 +190,32 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func putHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["ID"]
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
 	}
 	defer db.Close()
+	switch r.Method {
+	case "POST":
+
+	case "GET":
+		rows, err := db.Query("select company, email, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests where id=?", html.EscapeString(id))
+		if err != nil {
+			log.Println(err)
+		}
+		b := Page{Tests: []Tests{}}
+		for rows.Next() {
+			res := Tests{}
+			rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		}
+		err = templates.ExecuteTemplate(w, "modify.html", &b)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+
 }
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	err := templates.ExecuteTemplate(w, "index.html", "")
