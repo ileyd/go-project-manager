@@ -15,14 +15,20 @@ CREATE TABLE `tests` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `users` (
+CREATE TABLE `companies` {
   `id` int(10) unsigned NOT NULL auto_increment,
   `email` longtext,
   `company` longtext,
   `contactname` longtext,
   `phone` int(10),
   `address` longtext,
+
+}
+
+CREATE TABLE `users` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `email` longtext,
   `password` longtext,
-  `level` int(3),
+  `level` longtext,
   PRIMARY KEY (`id`)
 );
