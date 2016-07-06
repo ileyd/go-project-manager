@@ -75,7 +75,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select id, company, email, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests")
+	rows, err := db.Query("select id, company, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests")
 	if err != nil {
 		log.Println(err)
 	}
@@ -156,7 +156,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func delHandler(w http.ResponseWriter, r *http.Request) {
+func doneHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["ID"]
 	db, err := sql.Open("mysql", DATABASE)
@@ -164,11 +164,11 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	_, err = db.Query("delete from tests where id=?", html.EscapeString(id))
+	_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
 	if err != nil {
 		log.Println(err)
 	}
-	io.WriteString(w, id+"deleted")
+	io.WriteString(w, id+" completed")
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -297,7 +297,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/new", newHandler)
-	router.HandleFunc("/del/{id}", delHandler)
+	router.HandleFunc("/done/{id}", doneHandler)
 	router.HandleFunc("/put/{id}", putHandler)
 	router.HandleFunc("/customer/{id}", customerHandler)
 	router.HandleFunc("/login", loginHandler)
