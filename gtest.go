@@ -11,6 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -123,6 +124,21 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, id+"deleted")
 }
 
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/login", 301)
+}
+
+var cookieHandler = securecookie.New(
+	securecookie.GenerateRandomKey(64),
+	securecookie.GenerateRandomKey(32))
+
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -131,6 +147,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	case "POST":
+
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 		db, err := sql.Open("mysql", DATABASE)
@@ -138,8 +155,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		var hashedPassword string
-		err = db.QueryRow("select password from users where email=?", html.EscapeString(email)).Scan(&hashedPassword)
+		var hashedPassword, level string
+		err = db.QueryRow("select password, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &level)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/register", 303)
 		}
@@ -151,6 +168,18 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 
+		}
+		value := map[string]string{
+			"email": email,
+			"level": level,
+		}
+		if encoded, err := cookieHandler.Encode("session", value); err == nil {
+			cookie := &http.Cookie{
+				Name:  "session",
+				Value: encoded,
+				Path:  "/",
+			}
+			http.SetCookie(w, cookie)
 		}
 
 	}
@@ -183,6 +212,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
+		http.Redirect(w, r, "/login", 302)
 
 	}
 
