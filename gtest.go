@@ -281,6 +281,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			http.SetCookie(w, cookie)
 		}
+		http.Redirect(w, r, "/login", 302)
 
 	}
 
