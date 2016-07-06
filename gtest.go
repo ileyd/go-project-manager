@@ -298,13 +298,14 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		email := r.FormValue("email")
 		password := r.FormValue("password")
+		name := r.FormValue("name")
 		level := r.FormValue("level")
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
 		}
 		defer db.Close()
-		smt, err := db.Prepare("insert into users(email, password, level) values(?, ?, ?)")
+		smt, err := db.Prepare("insert into users(email, password, name, level) values(?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
@@ -312,7 +313,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword), html.EscapeString(level))
+		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword), html.EscapeString(name), html.EscapeString(level))
 		if err != nil {
 			log.Println(err)
 		}
