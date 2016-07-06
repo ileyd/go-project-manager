@@ -31,7 +31,7 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html", "templates/company.html"))
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
 	securecookie.GenerateRandomKey(32),
@@ -110,7 +110,7 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	b := Users{}
+	b := Company{}
 	for rows.Next() {
 		rows.Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
 	}
@@ -315,9 +315,12 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 
 	case "GET":
 		res := Tests{}
-		err = db.QueryRow("select id, company, email, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests where id=?", html.EscapeString(id)).Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests where id=?", html.EscapeString(id))
 		if err != nil {
 			log.Println(err)
+		}
+		for rows.Next() {
+			rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.Completion, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
 		}
 		err = templates.ExecuteTemplate(w, "modify.html", &res)
 		if err != nil {
