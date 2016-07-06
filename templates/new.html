@@ -30,78 +30,105 @@
 				<form class="form-horizontal" action="/new" method="POST">
 					<fieldset>
 						<legend>New</legend>
-						<div class="form-group is-empty">
-							<label for="inputCompany" class="col-md-2 control-label">Company</label>
 
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputCompany" placeholder="Company" required name="company">
+						<div class="form-group">
+							<div class="form-group is-empty">
+								<label for="inputEmail" class="col-md-2 control-label">Email</label>
+
+								<div class="col-md-10">
+									<input type="email" class="form-control" id="inputEmail" placeholder="Email" required name="email">
+								</div>
 							</div>
-						</div>
 
-						<div class="form-group is-empty">
-							<label for="inputEmail" class="col-md-2 control-label">Email</label>
+							<div class="form-group is-empty">
+								<label for="selectCompany" class="col-md-2 control-label">Company</label>
 
-							<div class="col-md-10">
-								<input type="email" class="form-control" id="inputEmail" placeholder="Email" required name="email">
+								<div class="col-md-10">
+									<select id="selectCompany" class="form-control" name="company">
+										{{range .Company}}
+										<option>{{.Company}}</option>
+										{{end}}
+									</select>
+								</div>
 							</div>
-						</div>
-						<div class="form-group is-empty">
-							<label for="inputMaterial" class="col-md-2 control-label">Material</label>
+							<div class="form-group is-empty">
+								<label for="inputDateReceived" class="col-md-2 control-label">Date Received</label>
 
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputMaterial" placeholder="Material" required name="material">
+								<div class="col-md-10">
+									<input type="date" class="form-control" id="inputDateReceived" required name="datereceived">
+								</div>
 							</div>
-						</div>
+							<div class="form-group is-empty">
+								<label for="inputSalesRep" class="col-md-2 control-label">SalesRep</label>
 
-						<div class="form-group is-empty">
-							<label for="inputProcess" class="col-md-2 control-label">Process</label>
-
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputProcess" placeholder="Process" required name="process">
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputSalesRep" required name="salesrep">
+								</div>
 							</div>
+							<div class="form-group is-empty">
+								<label for="inputSamples" class="col-md-2 control-label">Samples</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputSamples" required name="samples">
+								</div>
+							</div>
+
+							<div class="form-group is-empty">
+								<label for="inputRequirements" class="col-md-2 control-label">Requirements</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputRequirements" required name="requirements">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputDueDate" class="col-md-2 control-label">Due Date</label>
+
+								<div class="col-md-10">
+									<input type="date" class="form-control" id="inputDueDate" required name="duedate">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputDispatch" class="col-md-2 control-label">Dispatch</label>
+
+								<div class="col-md-10">
+									<input type="date" class="form-control" id="inputDispatch" required name="dispatch">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputCompletion" class="col-md-2 control-label">Completion</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputCompletion" required name="completion">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputAppNumber" class="col-md-2 control-label">App Number</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputAppNumber" required name="appnumber">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputStatus" class="col-md-2 control-label">Status</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputStatus" required name="status">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputComments" class="col-md-2 control-label">Comments</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputComments" required name="comments">
+								</div>
+							</div>
+
 						</div>
 						<div class="form-group">
-							<label for="selectSamples" class="col-md-2 control-label">Samples Provided</label>
 
-							<div class="col-md-10">
-								<select id="selectSamples" class="form-control" name="samples">
-									<option>true</option>
-									<option>false</option>
-								</select>
+							<div class="col-md-10 col-md-offset-2">
+								<button type="submit" class="btn btn-raised btn-primary">Submit<div class="ripple-container"></div></button>
 							</div>
-						</div>
-						<div class="form-group is-empty is-fileinput">
-							<label for="inputFile" class="col-md-2 control-label">File</label>
-
-							<div class="col-md-10">
-								<input type="text" readonly="" class="form-control" placeholder="Browse...">
-								<input type="file" id="inputFile" multiple="" name="files">
-							</div>
-						</div>
-						<div class="form-group is-empty">
-							<label for="inputMachine" class="col-md-2 control-label">Machine</label>
-
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputMachine" placeholder="Machine" required name="machine">
-							</div>
-						</div>
-						<div class="form-group is-empty">
-							<label for="inputRequest" class="col-md-2 control-label">Name</label>
-
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputRequest" placeholder="Name" required name="requestedby">
-							</div>
-						</div>
-						<div class="form-group is-empty">
-							<label for="inputDate" class="col-md-2 control-label">Due date</label>
-
-							<div class="col-md-10">
-								<input type="date" class="form-control" id="inputDate" required name="date">
-							</div>
-						</div>
-
-						<div class="col-md-10 col-md-offset-2">
-							<button type="submit" class="btn btn-primary">Submit<div class="ripple-container"></div></button>
 						</div>
 					</fieldset>
 				</form>
