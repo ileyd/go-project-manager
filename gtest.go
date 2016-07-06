@@ -2,9 +2,9 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 
@@ -106,17 +106,23 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-	}
 
 	}
 }
 
 func delHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["ID"]
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
 	}
 	defer db.Close()
+	_, err = db.Query("delete from tests where id=?", html.EscapeString(id))
+	if err != nil {
+		log.Println(err)
+	}
+	io.WriteString(w, id+"deleted")
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
