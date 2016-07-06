@@ -126,24 +126,30 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 	}
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+
 	switch r.Method {
 	case "GET":
-		err := templates.ExecuteTemplate(w, "new.html", "")
+		rows, err := db.Query("select company from companies")
+		if err != nil {
+			log.Println(err)
+		}
+		b := []Company{}
+		for rows.Next() {
+			res := Company{}
+			rows.Scan(&res.Company)
+			b = append(b, res)
+		}
+
+		err = templates.ExecuteTemplate(w, "new.html", &b)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	case "POST":
-		material := r.FormValue("material")
-		process := r.FormValue("process")
-		samples := r.FormValue("samples")
-		testfile := r.FormValue("files")
-		machine := r.FormValue("machine")
-		duedate := r.FormValue("duedate")
-		db, err := sql.Open("mysql", DATABASE)
-		if err != nil {
-			log.Println(err)
-		}
-		defer db.Close()
 		smt, err := db.Prepare("insert into tests(company, material, process, samples, testfile, machine, requestedby, duedate) values(?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
