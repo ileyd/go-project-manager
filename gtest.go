@@ -130,25 +130,22 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	case "POST":
-		company := r.FormValue("company")
-		email := r.FormValue("email")
 		material := r.FormValue("material")
 		process := r.FormValue("process")
 		samples := r.FormValue("samples")
 		testfile := r.FormValue("files")
 		machine := r.FormValue("machine")
-		requestedby := r.FormValue("requestedby")
 		duedate := r.FormValue("duedate")
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
 		}
 		defer db.Close()
-		smt, err := db.Prepare("insert into tests(company, email, material, process, samples, testfile, machine, requestedby, duedate) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into tests(company, material, process, samples, testfile, machine, requestedby, duedate) values(?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(email), html.EscapeString(material), html.EscapeString(process), html.EscapeString(samples), html.EscapeString(testfile), html.EscapeString(machine), html.EscapeString(requestedby), html.EscapeString(duedate))
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(material), html.EscapeString(process), html.EscapeString(samples), html.EscapeString(testfile), html.EscapeString(machine), html.EscapeString(requestedby), html.EscapeString(duedate))
 		if err != nil {
 			log.Println(err)
 		}
@@ -238,12 +235,16 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		email := r.FormValue("email")
 		password := r.FormValue("password")
+		name := r.FormValue("name")
+		company := r.FormValue("company")
+		phone := r.FormValue("phone")
+		address := r.FormValue("address")
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
 		}
 		defer db.Close()
-		smt, err := db.Prepare("insert into users(email, password) values(?, ?)")
+		smt, err := db.Prepare("insert into users(email, password, company, contactname, phone, address, level) values(?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
@@ -251,7 +252,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword))
+		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword), html.EscapeString(company), html.EscapeString(name), html.EscapeString(phone), html.EscapeString(address), "customer")
 		if err != nil {
 			log.Println(err)
 		}
