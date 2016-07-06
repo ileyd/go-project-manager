@@ -416,7 +416,10 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 	}
-	http.Redirect(w, r, "/new", 302)
+	err = templates.ExecuteTemplate(w, "index.html", "")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 
 }
 
