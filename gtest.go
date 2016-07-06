@@ -57,6 +57,10 @@ type Page struct {
 	Tests []Tests `json:"data"`
 }
 
+type New struct {
+	Company []Company `json:"data"`
+}
+
 type Users struct {
 	ID       string
 	Email    string
@@ -138,11 +142,12 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		b := []Company{}
+
+		b := New{Company: []Company{}}
 		for rows.Next() {
 			res := Company{}
 			rows.Scan(&res.Company)
-			b = append(b, res)
+			b.Company = append(b.Company, res)
 		}
 
 		err = templates.ExecuteTemplate(w, "new.html", &b)
@@ -268,7 +273,7 @@ func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		smt, err := db.Prepare("insert into users(email, company, contactname, phone, address) values(?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into companies(email, company, contactname, phone, address) values(?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
@@ -284,10 +289,6 @@ func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session")
-	if err != nil {
-		http.Redirect(w, r, "/login", 302)
-	}
 	switch r.Method {
 	case "GET":
 		err := templates.ExecuteTemplate(w, "register.html", "")
