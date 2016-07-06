@@ -411,7 +411,7 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(completion), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments))
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(completion), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments))
 		if err != nil {
 			log.Println(err)
 		}
