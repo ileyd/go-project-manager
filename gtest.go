@@ -93,12 +93,21 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		machine := r.FormValue("machine")
 		requestedby := r.FormValue("requestedby")
 		duedate := r.FormValue("duedate")
-		fmt.Println(company, email, material, process, samples, testfile, machine, requestedby, duedate)
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
 		}
 		defer db.Close()
+		smt, err := db.Prepare("insert into tests(company, email, material, process, samples, testfile, machine, requestedby, duedate) values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			log.Println(err)
+		}
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(email), html.EscapeString(material), html.EscapeString(process), html.EscapeString(samples), html.EscapeString(testfile), html.EscapeString(machine), html.EscapeString(requestedby), html.EscapeString(duedate))
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
 	}
 }
 
