@@ -69,7 +69,7 @@
 				<tbody>
 					{{ range .Tests}}
 						<tr>
-							<td>{{.ID}}</td>
+							<td><a href="/put/{{.ID}}">{{.ID}}</a></td>
 							<td><a href="/customer/{{.ID}}">{{.Customer}}</a></td>
 							<td>{{.DateReceived}}</td>
 							<td>{{.SalesRep}}</td>
@@ -81,7 +81,7 @@
 							<td><a href="/files/{{.ID}}">{{.AppNumber}}</a></td>
 							<td>{{.Status}}</td>
 							<td>{{.Comments}}</td>
-							<td><a href="/done/{{.ID}}">{{.Done}}</td>
+							<td><a href="/done/{{.ID}}">{{.Done}}</a></td>
 						</tr>
 					{{end}}
 				</tbody>

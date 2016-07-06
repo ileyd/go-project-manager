@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-		<title>Modify</title>
+		<title>New test</title>
 
 		<!-- Material Design fonts -->
 		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
@@ -50,51 +50,97 @@
 
 		<div class="container">
 			<div class="well bs-component">
-				<form class="form-horizontal" action="/put" method="POST">
+				<form class="form-horizontal" action="/new" method="POST">
 					<fieldset>
 						<legend>New</legend>
-						<div class="form-group is-empty">
-							<label for="inputCompany" class="col-md-2 control-label">Company</label>
 
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputCompany" value="{{.Customer}}" required name="company">{{.Company}}</input>
+						<div class="form-group">
+
+							<div class="form-group is-empty">
+								<label for="selectCompany" class="col-md-2 control-label">Company</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputCompany" required name="company" value="{{.Customer}}">
+								</div>
 							</div>
-						</div>
+							<div class="form-group is-empty">
+								<label for="inputDateReceived" class="col-md-2 control-label">Date Received</label>
 
-						<div class="form-group is-empty">
-							<label for="inputEmail" class="col-md-2 control-label">Email</label>
-
-							<div class="col-md-10">
-								<input type="email" class="form-control" id="inputEmail" value="{{.Email}}" required name="email">
+								<div class="col-md-10">
+									<input type="date" class="form-control" id="inputDateReceived" required name="datereceived" value="{{.DateReceived}}">
+								</div>
 							</div>
+							<div class="form-group is-empty">
+								<label for="inputSalesRep" class="col-md-2 control-label">SalesRep</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputSalesRep" required name="salesrep" value="{{.SalesRep}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputSamples" class="col-md-2 control-label">Samples</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputSamples" required name="samples" value="{{.Samples}}">
+								</div>
+							</div>
+
+							<div class="form-group is-empty">
+								<label for="inputRequirements" class="col-md-2 control-label">Requirements</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputRequirements" required name="requirements" value="{{.Requirements}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputDueDate" class="col-md-2 control-label">Due Date</label>
+
+								<div class="col-md-10">
+									<input type="date" class="form-control" id="inputDueDate" required name="duedate" value="{{.DueDate}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputDispatch" class="col-md-2 control-label">Dispatch</label>
+
+								<div class="col-md-10">
+									<input type="date" class="form-control" id="inputDispatch" required name="dispatch" value="{{.Dispatch}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputCompletion" class="col-md-2 control-label">Completion</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputCompletion" required name="completion" value="{{.Completion}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputAppNumber" class="col-md-2 control-label">App Number</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputAppNumber" required name="appnumber" value="{{.AppNumber}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputStatus" class="col-md-2 control-label">Status</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputStatus" required name="status" value="{{.Status}}">
+								</div>
+							</div>
+							<div class="form-group is-empty">
+								<label for="inputComments" class="col-md-2 control-label">Comments</label>
+
+								<div class="col-md-10">
+									<input type="text" class="form-control" id="inputComments" required name="comments" value="{{.Comments}}">
+								</div>
+							</div>
+
 						</div>
 						<div class="form-group">
-							<label for="selectSamples" class="col-md-2 control-label">Samples Provided</label>
 
-							<div class="col-md-10">
-								<select id="selectSamples" class="form-control" name="samples" value="{{.Samples}}">
-									<option>true</option>
-									<option>false</option>
-								</select>
+							<div class="col-md-10 col-md-offset-2">
+								<button type="submit" class="btn btn-raised btn-primary">Submit<div class="ripple-container"></div></button>
 							</div>
-						</div>
-						<div class="form-group is-empty">
-							<label for="inputRequest" class="col-md-2 control-label">Name</label>
-
-							<div class="col-md-10">
-								<input type="text" class="form-control" id="inputRequest" value="{{.RequestedBy}}" required name="requestedby">
-							</div>
-						</div>
-						<div class="form-group is-empty">
-							<label for="inputDate" class="col-md-2 control-label">Due date</label>
-
-							<div class="col-md-10">
-								<input type="date" class="form-control" id="inputDate" value="{{.DueDate}}" required name="date">
-							</div>
-						</div>
-
-						<div class="col-md-10 col-md-offset-2">
-							<button type="submit" class="btn btn-primary">Submit<div class="ripple-container"></div></button>
 						</div>
 					</fieldset>
 				</form>
