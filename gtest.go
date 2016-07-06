@@ -68,12 +68,14 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	res := Tests{}
+	b := Page{Tests: []Tests{}}
 	for rows.Next() {
+		res := Tests{}
 		rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		b.Tests = append(b.Tests, res)
 	}
 
-	err = templates.ExecuteTemplate(w, "orders.html", &res)
+	err = templates.ExecuteTemplate(w, "orders.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
