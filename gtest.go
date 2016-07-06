@@ -263,7 +263,7 @@ func main() {
 	router.HandleFunc("/del/{id}", delHandler)
 	router.HandleFunc("/put/{id}", putHandler)
 	router.HandleFunc("/login", loginHandler)
-	router.HandleFunc("/logut", logoutHandler)
+	router.HandleFunc("/logout", logoutHandler)
 	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/orders", ordersHandler)
 	router.HandleFunc("/", rootHandler)
