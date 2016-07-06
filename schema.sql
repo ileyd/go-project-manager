@@ -1,6 +1,5 @@
 CREATE TABLE `tests` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `company` longtext,
   `material` longtext,
   `duedate` TIMESTAMP,
   `process` longtext,
