@@ -47,6 +47,7 @@ type Tests struct {
 	DueDate      string `json:"duedate"`
 	Dispatch     string `json:"dispatch"`
 	Completion   string `json:"completion"`
+	AppNumber    string `json:"appnumber"`
 	Status       string `json:"status"`
 	Comments     string `json:"comments"`
 	Done         bool   `json:"done"`
@@ -77,14 +78,14 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, status, comments, done from tests")
+	rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests")
 	if err != nil {
 		log.Println(err)
 	}
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
-		rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.Completion, &res.Status, &res.Comments, &res.Done)
+		rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.Completion, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
 		b.Tests = append(b.Tests, res)
 	}
 
