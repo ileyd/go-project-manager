@@ -155,8 +155,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		var hashedPassword, level string
-		err = db.QueryRow("select password, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &level)
+		var hashedPassword string
+		err = db.QueryRow("select password from users where email=?", html.EscapeString(email)).Scan(&hashedPassword)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/register", 303)
 		}
@@ -171,7 +171,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		value := map[string]string{
 			"email": email,
-			"level": level,
+			"level": "admin",
 		}
 		if encoded, err := cookieHandler.Encode("session", value); err == nil {
 			cookie := &http.Cookie{
@@ -200,7 +200,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		smt, err := db.Prepare("insert into user(email, password) values(?. ?)")
+		smt, err := db.Prepare("insert into users(email, password) values(?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
@@ -208,7 +208,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(email), hashedPassword)
+		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword))
 		if err != nil {
 			log.Println(err)
 		}
