@@ -31,7 +31,7 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html"))
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
 	securecookie.GenerateRandomKey(32),
@@ -58,6 +58,17 @@ type Page struct {
 	Tests []Tests `json:"data"`
 }
 
+type Users struct {
+	ID          string
+	Email       string
+	Company     string
+	ContactName string
+	Phone       string
+	Address     string
+	Password    string
+	Level       string
+}
+
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
@@ -76,6 +87,26 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = templates.ExecuteTemplate(w, "orders.html", &b)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+func customerHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+	rows, err := db.Query("select id, email, company, contactname, phone, address from users where id=?")
+	if err != nil {
+		log.Println(err)
+	}
+	b := Users{}
+	for rows.Next() {
+		rows.Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
+	}
+
+	err = templates.ExecuteTemplate(w, "customer.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -262,6 +293,7 @@ func main() {
 	router.HandleFunc("/new", newHandler)
 	router.HandleFunc("/del/{id}", delHandler)
 	router.HandleFunc("/put/{id}", putHandler)
+	router.HandleFunc("/customer/{id}", customerHandler)
 	router.HandleFunc("/login", loginHandler)
 	router.HandleFunc("/logout", logoutHandler)
 	router.HandleFunc("/register", registerHandler)
