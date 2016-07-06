@@ -32,6 +32,10 @@ const (
 )
 
 var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html"))
+var cookieHandler = securecookie.New(
+	securecookie.GenerateRandomKey(64),
+	securecookie.GenerateRandomKey(32),
+)
 
 type Tests struct {
 	ID              string `json:"id"`
@@ -134,10 +138,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 	http.Redirect(w, r, "/login", 301)
 }
-
-var cookieHandler = securecookie.New(
-	securecookie.GenerateRandomKey(64),
-	securecookie.GenerateRandomKey(32))
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -263,6 +263,7 @@ func main() {
 	router.HandleFunc("/del/{id}", delHandler)
 	router.HandleFunc("/put/{id}", putHandler)
 	router.HandleFunc("/login", loginHandler)
+	router.HandleFunc("/logut", logoutHandler)
 	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/orders", ordersHandler)
 	router.HandleFunc("/", rootHandler)
