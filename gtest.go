@@ -215,7 +215,7 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 	vars := mux.Vars(r)
-	id := vars["ID"]
+	id := vars["id"]
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
