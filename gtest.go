@@ -104,22 +104,19 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", 302)
 	}
 	vars := mux.Vars(r)
-	id := vars["ID"]
+	id := vars["id"]
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select id, email, company, contactname, phone, address from users where id=?", html.EscapeString(id))
+	b := Company{}
+	err = db.QueryRow("select * from companies where id=?", html.EscapeString(id)).Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
 	if err != nil {
 		log.Println(err)
 	}
-	b := Company{}
-	for rows.Next() {
-		rows.Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
-	}
 
-	err = templates.ExecuteTemplate(w, "customer.html", &b)
+	err = templates.ExecuteTemplate(w, "customers.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
