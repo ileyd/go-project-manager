@@ -164,16 +164,16 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		dispatch := r.FormValue("dispatch")
 		completion := r.FormValue("completion")
 		appnumber := r.FormValue("appnumber")
-		status := r.FormValue("appnumber")
+		status := r.FormValue("status")
 		comments := r.FormValue("comments")
 
-		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
 		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(completion), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments), false)
 		if err != nil {
-			log.Println(err)
+			log.Println(err.Error())
 		}
 
 	}
