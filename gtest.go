@@ -38,19 +38,18 @@ var cookieHandler = securecookie.New(
 )
 
 type Tests struct {
-	ID              string `json:"id"`
-	Company         string `json:"company"`
-	Material        string `json:"material"`
-	Process         string `json:"process"`
-	Samples         bool   `json"samples"`
-	TestFile        bool   `json:"testfile"`
-	SamplesRecieved string `json:"SamplesRecieved"`
-	Machine         string `json:"machine"`
-	RequestedBy     string `json:"RequestedBy"`
-	PerformedBy     string `json:"PerformedBy"`
-	DueDate         string `json:"DueDate"`
-	Completion      string `json:"Completion"`
-	Status          string `json:"Status"`
+	ID           string `json:"id"`
+	Customer     string `json:"customer"`
+	DateReceived string `json:"datereceived"`
+	SalesRep     string `json:"salesrep"`
+	Samples      string `json:"samples"`
+	Requirements string `json:"requirements"`
+	DueDate      string `json:"duedate"`
+	Dispatch     string `json:"dispatch"`
+	Completion   string `json:"completion"`
+	Status       string `json:"status"`
+	Comments     string `json:"comments"`
+	Done         bool   `json:"done"`
 }
 
 type Page struct {
@@ -78,14 +77,14 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select id, company, material, process, samples, testfile, samples , machine, requestedby, performedby, duedate, completion, status from tests")
+	rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, status, comments, done from tests")
 	if err != nil {
 		log.Println(err)
 	}
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
-		rows.Scan(&res.ID, &res.Company, &res.Email, &res.Material, &res.Process, &res.Samples, &res.TestFile, &res.SamplesRecieved, &res.Machine, &res.RequestedBy, &res.PerformedBy, &res.DueDate, &res.Completion, &res.Status)
+		rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.Completion, &res.Status, &res.Comments, &res.Done)
 		b.Tests = append(b.Tests, res)
 	}
 
