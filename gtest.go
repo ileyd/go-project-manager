@@ -252,13 +252,6 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-func statusUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-}
 
 func main() {
 
