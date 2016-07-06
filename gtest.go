@@ -395,6 +395,26 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	switch r.Method {
 	case "POST":
+		company := r.FormValue("company")
+		datereceived := r.FormValue("datereceived")
+		salesrep := r.FormValue("salesrep")
+		samples := r.FormValue("samples")
+		requirements := r.FormValue("requirements")
+		duedate := r.FormValue("duedate")
+		dispatch := r.FormValue("dispatch")
+		completion := r.FormValue("completion")
+		appnumber := r.FormValue("appnumber")
+		status := r.FormValue("status")
+		comments := r.FormValue("comments")
+
+		smt, err := db.Prepare("Update tests set customer=?, datereceived=?, salesrep=?, samples=?, requirements=?, duedate=?, dispatch=?, completion=?, appnumber=?, status=?, comments=? where id=?")
+		if err != nil {
+			log.Println(err)
+		}
+		err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(completion), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments))
+		if err != nil {
+			log.Println(err)
+		}
 
 	case "GET":
 		res := Tests{}
