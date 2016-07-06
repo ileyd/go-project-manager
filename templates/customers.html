@@ -29,39 +29,22 @@
 			<table class="table table-hover">
 				<thead>
 					<th>#</th>
-					<th>Company</th>
 					<th>Email</th>
-					<th>Material</th>
-					<th>Process</th>
-					<th>Samples provided</th>
-					<th>testing file provided</th>
-					<th>Samples Recieved</th>
-					<th>Machine</th>
-					<th>Requested by</th>
-					<th>To be Performed by</th>
-					<th>Due date</th>
-					<th>Completed</th>
-					<th>status</th>
+					<th>Company</th>
+					<th>Contact Name</th>
+					<th>Phone</th>
+					<th>Address</th>
+
 				</thead>
 				<tbody>
-					{{ range .Tests}}
-						<tr>
-							<td>{{.ID}}</td>
-							<td>{{.Company}}</td>
-							<td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
-							<td>{{.Material}}</td>
-							<td>{{.Process}}</td>
-							<td>{{.Samples}}</td>
-							<td>{{.TestFile}}</td>
-							<td>{{.SamplesRecieved}}</td>
-							<td>{{.Machine}}</td>
-							<td>{{.RequestedBy}}</td>
-							<td>{{.PerformedBy}}</td>
-							<td>{{.DueDate}}</td>
-							<td>{{.Completion}}</td>
-							<td>{{.Status}}</td>
-						</tr>
-					{{end}}
+					<tr>
+						<td>{{.ID}}</td>
+						<td>{{.Company}}</td>
+						<td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
+						<th>{{.ContactName}}</th>
+						<th>{{.Phone}}</th>
+						<th>{{.Address}}</th>
+					</tr>
 				</tbody>
 			</table>
 		</div>
