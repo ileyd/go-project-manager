@@ -415,6 +415,7 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
+		http.Redirect(w, r, "/orders", 302)
 
 	case "GET":
 		res := Tests{}
