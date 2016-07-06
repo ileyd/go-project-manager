@@ -144,6 +144,11 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", 302)
+	}
+
 	switch r.Method {
 	case "GET":
 		err := templates.ExecuteTemplate(w, "login.html", "")
@@ -246,10 +251,11 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates.ExecuteTemplate(w, "index.html", "")
+	_, err := r.Cookie("session")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Redirect(w, r, "/login", 302)
 	}
+	http.Redirect(w, r, "/new", 302)
 
 }
 
