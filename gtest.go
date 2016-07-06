@@ -144,11 +144,6 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session")
-	if err != nil {
-		http.Redirect(w, r, "/login", 302)
-	}
-
 	switch r.Method {
 	case "GET":
 		err := templates.ExecuteTemplate(w, "login.html", "")
