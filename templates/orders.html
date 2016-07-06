@@ -30,36 +30,34 @@
 				<thead>
 					<th>#</th>
 					<th>Company</th>
-					<th>Email</th>
-					<th>Material</th>
-					<th>Process</th>
-					<th>Samples provided</th>
-					<th>testing file provided</th>
-					<th>Samples Recieved</th>
-					<th>Machine</th>
-					<th>Requested by</th>
-					<th>To be Performed by</th>
-					<th>Due date</th>
-					<th>Completed</th>
-					<th>status</th>
+					<th>Date Recieved</th>
+					<th>Sales Rep</th>
+					<th>Samples</th>
+					<th>Requirements</th>
+					<th>Due Date</th>
+					<th>Dispatch<th>
+					<th>Completion</th>
+					<th>App Number</th>
+					<th>Status</th>
+					<th>Comments</th>
+					<th>Done</th>
 				</thead>
 				<tbody>
 					{{ range .Tests}}
 						<tr>
 							<td>{{.ID}}</td>
-							<td>{{.Company}}</td>
-							<td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
-							<td>{{.Material}}</td>
-							<td>{{.Process}}</td>
+							<td><a href="/customer/{{.ID}}">{{.Company}}</a></td>
+							<td>{{.DateReceived}}</td>
+							<td>{{.SalesRep}}</td>
 							<td>{{.Samples}}</td>
-							<td>{{.TestFile}}</td>
-							<td>{{.SamplesRecieved}}</td>
-							<td>{{.Machine}}</td>
-							<td>{{.RequestedBy}}</td>
-							<td>{{.PerformedBy}}</td>
+							<td>{{.Requirements}}</td>
 							<td>{{.DueDate}}</td>
+							<td>{{.Dispatch}}</td>
 							<td>{{.Completion}}</td>
+							<td>{<a href="/files/{{.ID}}">{.AppNumber}}</a></td>
 							<td>{{.Status}}</td>
+							<td>{{.Comments}}</td>
+							<td>{{.Done}}</td>
 						</tr>
 					{{end}}
 				</tbody>
