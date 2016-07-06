@@ -40,7 +40,6 @@ var cookieHandler = securecookie.New(
 type Tests struct {
 	ID              string `json:"id"`
 	Company         string `json:"company"`
-	Email           string `json:"email"`
 	Material        string `json:"material"`
 	Process         string `json:"process"`
 	Samples         bool   `json"samples"`
@@ -59,14 +58,18 @@ type Page struct {
 }
 
 type Users struct {
+	ID       string
+	Email    string
+	Password string
+	Level    string
+}
+type Company struct {
 	ID          string
 	Email       string
 	Company     string
 	ContactName string
 	Phone       string
 	Address     string
-	Password    string
-	Level       string
 }
 
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
@@ -145,7 +148,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(material), html.EscapeString(process), html.EscapeString(samples), html.EscapeString(testfile), html.EscapeString(machine), html.EscapeString(requestedby), html.EscapeString(duedate))
+		_, err = smt.Exec("dicks", html.EscapeString(material), html.EscapeString(process), html.EscapeString(samples), html.EscapeString(testfile), html.EscapeString(machine), "dicks", html.EscapeString(duedate))
 		if err != nil {
 			log.Println(err)
 		}
@@ -198,7 +201,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		var hashedPassword string
 		err = db.QueryRow("select password from users where email=?", html.EscapeString(email)).Scan(&hashedPassword)
 		if err == sql.ErrNoRows {
-			http.Redirect(w, r, "/register", 303)
+			http.Redirect(w, r, "/login", 303)
 		}
 		if err != nil {
 			log.Println(err)
@@ -226,6 +229,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func registerHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", 302)
+	}
 	switch r.Method {
 	case "GET":
 		err := templates.ExecuteTemplate(w, "register.html", "")
@@ -235,10 +242,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		email := r.FormValue("email")
 		password := r.FormValue("password")
-		name := r.FormValue("name")
-		company := r.FormValue("company")
-		phone := r.FormValue("phone")
-		address := r.FormValue("address")
+		level := r.FormValue("level")
 		db, err := sql.Open("mysql", DATABASE)
 		if err != nil {
 			log.Println(err)
@@ -252,7 +256,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword), html.EscapeString(company), html.EscapeString(name), html.EscapeString(phone), html.EscapeString(address), "customer")
+		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword), html.EscapeString(level))
 		if err != nil {
 			log.Println(err)
 		}
