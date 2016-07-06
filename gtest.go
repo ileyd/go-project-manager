@@ -92,12 +92,18 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func customerHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", 302)
+	}
+	vars := mux.Vars(r)
+	id := vars["ID"]
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select id, email, company, contactname, phone, address from users where id=?")
+	rows, err := db.Query("select id, email, company, contactname, phone, address from users where id=?", html.EscapeString(id))
 	if err != nil {
 		log.Println(err)
 	}
