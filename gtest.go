@@ -272,14 +272,17 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if status == true {
 		_, err = db.Query("update tests set done=false where id=?", html.EscapeString(id))
+		if err != nil {
+			log.Println(err)
+		}
 	}
 	if status == false {
 		_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
-	if err != nil {
-		log.Println(err)
-	}
 	http.Redirect(w, r, "/", 302)
 }
 
