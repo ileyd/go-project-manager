@@ -66,6 +66,21 @@
 					{{end}}
 				</tbody>
 			</table>
+			<div class="well bs-component">
+				<form class="form-horizontal" action="/files/{{.ID}}" method="POST">
+					<fieldset>
+						<legend>Files Upload</legend>
+						<div class="form-group is-empty is-fileinput">
+							<label for="inputFile" class="col-md-2 control-label">Files</label>
+
+							<div class="col-md-10">
+								<input type="text" readonly="" class="form-control" placeholder="Browse...">
+								<input type="file" id="inputFile" multiple="">
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
 		</div>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
