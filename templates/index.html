@@ -80,7 +80,7 @@
 							<td>{{.Status}}</td>
 							<td>{{.Comments}}</td>
 							<td><a href="/done/{{.ID}}">{{.Done}}</a></td>
-							<td><a href="/del/{{.ID}}">Delete</a></td>
+							<td><a href="/del/{{.ID}}" onclick="return confirm('Are you sure?')">Delete</a></td>
 						</tr>
 					{{end}}
 				</tbody>
