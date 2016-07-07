@@ -203,7 +203,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		requirements := r.FormValue("requirements")
 		comments := r.FormValue("comments")
 
-		smt, err := db.Prepare("insert into tests(customer, salesrep, samples, requirements, comments, done) values (?, ?, ?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into tests(customer, salesrep, samples, requirements, comments, done) values (?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
