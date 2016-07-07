@@ -4,6 +4,7 @@ CREATE TABLE `tests` (
   `salesrep` longtext,
   `samples` longtext,
   `requirements` longtext,
+  `done` boolean,
   `datereceived` longtext,
   `duedate` longtext,
   `dispatch` longtext,
@@ -11,7 +12,6 @@ CREATE TABLE `tests` (
   `appnumber` longtext,
   `status` longtext,
   `comments` longtext,
-  `done` boolean,
   PRIMARY KEY (`id`)
 );
 

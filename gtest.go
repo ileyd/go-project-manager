@@ -118,7 +118,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
-		rows.Scan(&res.ID, &res.Customer, &res.SalesRep, &res.Samples, &res.Requirements, &res.Done, &res.DateReceived, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments)
+		rows.Scan(&res.ID, &res.Customer, &res.SalesRep, &res.Samples, &res.Requirements,&res.Done. &res.DateReceived, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments)
 		b.Tests = append(b.Tests, res)
 	}
 
