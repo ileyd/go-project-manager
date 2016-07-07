@@ -100,7 +100,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	level := cookieValue["level"]
-	name := cookieValue["level"]
+	name := cookieValue["name"]
 	if level != "admin" || level != "sales" {
 		http.Redirect(w, r, "/login", 302)
 	}
@@ -273,8 +273,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer db.Close()
 		var hashedPassword []byte
-		var level string
-		err = db.QueryRow("select password, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &level)
+		var level, name string
+		err = db.QueryRow("select password, name level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &name, &level)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/login", 303)
 		}
@@ -286,6 +286,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			value := map[string]string{
 				"email": email,
+				"name":  name,
 				"level": level,
 			}
 			if encoded, err := cookieHandler.Encode("session", value); err == nil {
