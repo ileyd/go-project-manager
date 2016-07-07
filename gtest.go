@@ -108,9 +108,9 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	var rows *sql.Rows
 	if level == "admin" {
-		rows, err = db.Query("select id, customer, salesrep, samples, requirements, datereceived, duedate, dispatch, appnumber, status, comments, done from tests")
+		rows, err = db.Query("select id, customer, salesrep, samples, requirements, done, datereceived, duedate, dispatch, appnumber, status, comments from tests")
 	} else {
-		rows, err = db.Query("select id, customer, salesrep, samples, requirements, datereceived, duedate, dispatch, appnumber, status, comments, done from tests where salesrep=?", html.EscapeString(name))
+		rows, err = db.Query("select id, customer, salesrep, samples, requirements, done, datereceived, duedate, dispatch, appnumber, status, comments from tests where salesrep=?", html.EscapeString(name))
 	}
 	if err != nil {
 		log.Println(err)
@@ -118,7 +118,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
-		rows.Scan(&res.ID, &res.Customer, &res.SalesRep, &res.Samples, &res.Requirements, &res.DateReceived, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
+		rows.Scan(&res.ID, &res.Customer, &res.SalesRep, &res.Samples, &res.Requirements, &res.Done, &res.DateReceived, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments)
 		b.Tests = append(b.Tests, res)
 	}
 
