@@ -199,19 +199,27 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	case "POST":
 		company := r.FormValue("company")
-		datereceived := r.FormValue("datereceived")
 		samples := r.FormValue("samples")
 		requirements := r.FormValue("requirements")
 		comments := r.FormValue("comments")
 
-		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, comments, done) values (?, ?, ?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into tests(customer, salesrep, samples, requirements, comments, done) values (?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(comments), false)
+		_, err = smt.Exec(html.EscapeString(company), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(comments), false)
 		if err != nil {
 			log.Println(err.Error())
 		}
+		query, err := db.Prepare("Update tests set datereceived=?, duedate=?, dispatch=?, appnumber=?, status=? where id=?")
+		if err != nil {
+			log.Println(err)
+		}
+		_, err = query.Exec("", "", "", "", "", "")
+		if err != nil {
+			log.Println(err)
+		}
+
 		http.Redirect(w, r, "/new", 302)
 
 	}
