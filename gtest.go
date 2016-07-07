@@ -100,7 +100,8 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	level := cookieValue["level"]
-	if level != "admin" {
+	name := cookieValue["level"]
+	if level != "admin" || level != "sales" {
 		http.Redirect(w, r, "/login", 302)
 	}
 
@@ -109,7 +110,11 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests")
+	if level == "admin" {
+		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests")
+	} else {
+		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests where salesrep=?", html.EscapeString(name))
+	}
 	if err != nil {
 		log.Println(err)
 	}
@@ -526,17 +531,6 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session")
-	if err != nil {
-		http.Redirect(w, r, "/login", 302)
-	}
-	err = templates.ExecuteTemplate(w, "index.html", "")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-}
 
 func main() {
 
@@ -550,9 +544,8 @@ func main() {
 	router.HandleFunc("/login", loginHandler)
 	router.HandleFunc("/logout", logoutHandler)
 	router.HandleFunc("/register", registerHandler)
-	router.HandleFunc("/orders", ordersHandler)
+	router.HandleFunc("/", ordersHandler)
 	router.Handle("/static/{rest}", http.StripPrefix("/static/", http.FileServer(http.Dir(UPDIRECTORY))))
-	router.HandleFunc("/", rootHandler)
 	err := http.ListenAndServe(PORT, router)
 	if err != nil {
 		log.Fatal(err)
