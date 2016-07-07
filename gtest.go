@@ -101,7 +101,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	level := cookieValue["level"]
 	name := cookieValue["name"]
-	if level != "admin"  
+	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
 	}
 	if level != "sales" {
