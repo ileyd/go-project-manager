@@ -274,7 +274,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 		var hashedPassword []byte
 		var level, name string
-		err = db.QueryRow("select password, name level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &name, &level)
+		err = db.QueryRow("select password, name, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &name, &level)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/login", 303)
 		}
