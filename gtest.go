@@ -172,7 +172,6 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	level := cookieValue["level"]
 	name := cookieValue["name"]
 
 	db, err := sql.Open("mysql", DATABASE)
