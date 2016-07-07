@@ -239,11 +239,22 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
-	_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
+	var status bool
+	err = db.QueryRow("select done from tests where id=?", html.EscapeString(id)).Scan(&status)
 	if err != nil {
 		log.Println(err)
 	}
-	io.WriteString(w, id+" completed")
+	if status == true {
+		_, err = db.Query("update tests set done=false where id=?", html.EscapeString(id))
+	}
+	if status == false {
+		_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
+	}
+
+	if err != nil {
+		log.Println(err)
+	}
+	http.Redirect(w, r, "/new", 302)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
