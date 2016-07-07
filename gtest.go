@@ -48,7 +48,6 @@ type Tests struct {
 	Requirements string `json:"requirements"`
 	DueDate      string `json:"duedate"`
 	Dispatch     string `json:"dispatch"`
-	Completion   string `json:"completion"`
 	AppNumber    string `json:"appnumber"`
 	Status       string `json:"status"`
 	Comments     string `json:"comments"`
@@ -109,9 +108,9 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	var rows *sql.Rows
 	if level == "admin" {
-		rows, err = db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests")
+		rows, err = db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, appnumber, status, comments, done from tests")
 	} else {
-		rows, err = db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests where salesrep=?", html.EscapeString(name))
+		rows, err = db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, appnumber, status, comments, done from tests where salesrep=?", html.EscapeString(name))
 	}
 	if err != nil {
 		log.Println(err)
@@ -119,7 +118,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
-		rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.Completion, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
+		rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
 		b.Tests = append(b.Tests, res)
 	}
 
@@ -204,14 +203,13 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		samples := r.FormValue("samples")
 		requirements := r.FormValue("requirements")
 		duedate := r.FormValue("duedate")
-		completion := r.FormValue("completion")
 		comments := r.FormValue("comments")
 
-		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, duedate, completion, comments, done) values (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, duedate, comments, done) values (?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(completion), html.EscapeString(comments), false)
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(comments), false)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -505,16 +503,15 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 		requirements := r.FormValue("requirements")
 		duedate := r.FormValue("duedate")
 		dispatch := r.FormValue("dispatch")
-		completion := r.FormValue("completion")
 		appnumber := r.FormValue("appnumber")
 		status := r.FormValue("status")
 		comments := r.FormValue("comments")
 
-		smt, err := db.Prepare("Update tests set customer=?, datereceived=?, salesrep=?, samples=?, requirements=?, duedate=?, dispatch=?, completion=?, appnumber=?, status=?, comments=? where id=?")
+		smt, err := db.Prepare("Update tests set customer=?, datereceived=?, salesrep=?, samples=?, requirements=?, duedate=?, dispatch=?, appnumber=?, status=?, comments=? where id=?")
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(completion), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments), html.EscapeString(id))
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments), html.EscapeString(id))
 		if err != nil {
 			log.Println(err)
 		}
@@ -522,12 +519,12 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 
 	case "GET":
 		res := Tests{}
-		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests where id=?", html.EscapeString(id))
+		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, appnumber, status, comments, done from tests where id=?", html.EscapeString(id))
 		if err != nil {
 			log.Println(err)
 		}
 		for rows.Next() {
-			rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.Completion, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
+			rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
 		}
 		err = templates.ExecuteTemplate(w, "modify.html", &res)
 		if err != nil {
