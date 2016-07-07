@@ -70,7 +70,8 @@ type Files struct {
 }
 
 type FilesPage struct {
-	Files []Files
+	Files     []Files
+	AppNumber string
 }
 
 type Users struct {
@@ -445,6 +446,7 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 
 	case "GET":
 		b := FilesPage{Files: []Files{}}
+		b.AppNumber = appnumber
 		rows, err := db.Query("select id, file, appnumber from files where appnumber=?", html.EscapeString(appnumber))
 		if err != nil {
 			log.Println(err)
