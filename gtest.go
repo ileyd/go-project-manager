@@ -101,12 +101,6 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	level := cookieValue["level"]
 	name := cookieValue["name"]
-	if level != "admin" {
-		http.Redirect(w, r, "/login", 302)
-	}
-	if level != "sales" {
-		http.Redirect(w, r, "/login", 302)
-	}
 
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
@@ -169,10 +163,18 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session")
+	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 	}
+	cookieValue := make(map[string]string)
+	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
+	if err != nil {
+		log.Println(err)
+	}
+	level := cookieValue["level"]
+	name := cookieValue["name"]
+
 	db, err := sql.Open("mysql", DATABASE)
 	if err != nil {
 		log.Println(err)
@@ -200,7 +202,6 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		company := r.FormValue("company")
 		datereceived := r.FormValue("datereceived")
-		salesrep := r.FormValue("salesrep")
 		samples := r.FormValue("samples")
 		requirements := r.FormValue("requirements")
 		duedate := r.FormValue("duedate")
@@ -211,7 +212,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(completion), html.EscapeString(comments), false)
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(completion), html.EscapeString(comments), false)
 		if err != nil {
 			log.Println(err.Error())
 		}
