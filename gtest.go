@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -18,7 +19,8 @@ import (
 
 const (
 	// ADDRESS that tracker will return links for
-	ADDRESS = "http://localhost:9900"
+	ADDRESS     = "http://localhost:9900"
+	UPDIRECTORY = "/tmp/"
 	// PORT that tracker will listen on
 	PORT = ":9900"
 	// USERNAME for database
@@ -31,7 +33,7 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html", "templates/company.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html", "templates/company.html", "templates/files.html"))
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
 	securecookie.GenerateRandomKey(32),
@@ -59,6 +61,16 @@ type Page struct {
 
 type New struct {
 	Company []Company `json:"data"`
+}
+
+type Files struct {
+	ID        string
+	Name      string
+	AppNumber string
+}
+
+type FilesPage struct {
+	Files []Files
 }
 
 type Users struct {
@@ -371,6 +383,86 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func filesHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", 302)
+	}
+	cookieValue := make(map[string]string)
+	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
+	if err != nil {
+		log.Println(err)
+	}
+	level := cookieValue["level"]
+	if level != "admin" {
+		http.Redirect(w, r, "/login", 302)
+	}
+
+	vars := mux.Vars(r)
+	appnumber := vars["appnumber"]
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+	switch r.Method {
+	case "POST":
+		reader, err := r.MultipartReader()
+		if err != nil {
+			log.Println(err)
+		}
+		for {
+			part, err := reader.NextPart()
+			if err == io.EOF {
+				break
+			}
+
+			if part.FileName() == "" {
+				continue
+			}
+
+			file := part.FileName()
+			dst, err := os.Create(UPDIRECTORY + file)
+			if err != nil {
+				log.Println(err)
+			}
+			defer dst.Close()
+			// save uploaded data to created file
+			_, err = io.Copy(dst, part)
+			if err != nil {
+				log.Println(err)
+			}
+			smt, err := db.Prepare("insert into files(file, appnumber) values(?, ?)")
+			if err != nil {
+				log.Println(err)
+			}
+			_, err = smt.Exec(file, html.EscapeString(appnumber))
+			if err != nil {
+				log.Println(err)
+			}
+
+		}
+
+	case "GET":
+		b := FilesPage{Files: []Files{}}
+		rows, err := db.Query("select id, file, appnumber from files where appnumber=?", html.EscapeString(appnumber))
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			res := Files{}
+			rows.Scan(&res.ID, &res.Name, &res.AppNumber)
+			b.Files = append(b.Files, res)
+
+		}
+		err = templates.ExecuteTemplate(w, "files.html", &b)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+
+}
 func putHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -452,6 +544,7 @@ func main() {
 	router.HandleFunc("/newcompany", newcompanyHandler)
 	router.HandleFunc("/done/{id}", doneHandler)
 	router.HandleFunc("/put/{id}", putHandler)
+	router.HandleFunc("/files/{appnumber}", filesHandler)
 	router.HandleFunc("/customer/{id}", customerHandler)
 	router.HandleFunc("/login", loginHandler)
 	router.HandleFunc("/logout", logoutHandler)

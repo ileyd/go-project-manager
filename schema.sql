@@ -25,6 +25,13 @@ CREATE TABLE `companies` (
   PRIMARY KEY (`id`)
 
 );
+CREATE TABLE `files` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `file` longtext,
+  `appnumber` longtext,
+  PRIMARY KEY (`id`)
+
+);
 
 CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
