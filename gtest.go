@@ -33,7 +33,7 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html", "templates/orders.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html", "templates/company.html", "templates/files.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html", "templates/company.html", "templates/files.html"))
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
 	securecookie.GenerateRandomKey(32),
