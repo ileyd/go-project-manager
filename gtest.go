@@ -126,7 +126,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		b.Tests = append(b.Tests, res)
 	}
 
-	err = templates.ExecuteTemplate(w, "orders.html", &b)
+	err = templates.ExecuteTemplate(w, "index.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -514,7 +514,7 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		http.Redirect(w, r, "/orders", 302)
+		http.Redirect(w, r, "/", 302)
 
 	case "GET":
 		res := Tests{}
