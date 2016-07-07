@@ -268,7 +268,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		defer db.Close()
-		var hashedPassword, level string
+		var hashedPassword []byte
+		var level string
 		err = db.QueryRow("select password, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &level)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/login", 303)
@@ -277,24 +278,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 
 		}
-		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-		if err != nil {
-			log.Println(err)
-
-		}
-		value := map[string]string{
-			"email": email,
-			"level": level,
-		}
-		if encoded, err := cookieHandler.Encode("session", value); err == nil {
-			cookie := &http.Cookie{
-				Name:  "session",
-				Value: encoded,
-				Path:  "/",
+		err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+		if err == nil {
+			value := map[string]string{
+				"email": email,
+				"level": level,
 			}
-			http.SetCookie(w, cookie)
+			if encoded, err := cookieHandler.Encode("session", value); err == nil {
+				cookie := &http.Cookie{
+					Name:  "session",
+					Value: encoded,
+					Path:  "/",
+				}
+				http.SetCookie(w, cookie)
+			}
+			http.Redirect(w, r, "/", 302)
 		}
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/login", 302)
 
 	}
 
@@ -375,7 +375,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(email), string(hashedPassword), html.EscapeString(name), html.EscapeString(level))
+		_, err = smt.Exec(html.EscapeString(email), hashedPassword, html.EscapeString(name), html.EscapeString(level))
 		if err != nil {
 			log.Println(err)
 		}
