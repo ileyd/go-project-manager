@@ -150,7 +150,7 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 	b := Company{}
-	err = db.QueryRow("select * from companies where id=?", html.EscapeString(id)).Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
+	err = db.QueryRow("select * from companies where company=?", html.EscapeString(id)).Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
 	if err != nil {
 		log.Println(err)
 	}
