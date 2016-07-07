@@ -217,6 +217,33 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func delHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", 302)
+	}
+	cookieValue := make(map[string]string)
+	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
+	if err != nil {
+		log.Println(err)
+	}
+	level := cookieValue["level"]
+	if level != "admin" {
+		http.Redirect(w, r, "/login", 302)
+	}
+	vars := mux.Vars(r)
+	id := vars["id"]
+	db, err := sql.Open("mysql", DATABASE)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+	_, err = db.Query("delete from tests where id=?", html.EscapeString(id))
+	if err != nil {
+		log.Println(err)
+	}
+	http.Redirect(w, r, "/", 302)
+}
 func doneHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -553,6 +580,7 @@ func main() {
 	router.HandleFunc("/newcompany", newcompanyHandler)
 	router.HandleFunc("/done/{id}", doneHandler)
 	router.HandleFunc("/put/{id}", putHandler)
+	router.HandleFunc("/del/{id}", delHandler)
 	router.HandleFunc("/files/{appnumber}", filesHandler)
 	router.HandleFunc("/customer/{id}", customerHandler)
 	router.HandleFunc("/login", loginHandler)
