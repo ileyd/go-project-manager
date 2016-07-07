@@ -110,10 +110,11 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	defer db.Close()
+	var rows *sql.Rows
 	if level == "admin" {
-		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests")
+		rows, err = db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests")
 	} else {
-		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests where salesrep=?", html.EscapeString(name))
+		rows, err = db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done from tests where salesrep=?", html.EscapeString(name))
 	}
 	if err != nil {
 		log.Println(err)
