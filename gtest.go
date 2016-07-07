@@ -550,7 +550,7 @@ func main() {
 	router.HandleFunc("/logout", logoutHandler)
 	router.HandleFunc("/register", registerHandler)
 	router.HandleFunc("/orders", ordersHandler)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(UPDIRECTORY))))
+	router.Handle("/static/{rest}", http.StripPrefix("/static/", http.FileServer(http.Dir(UPDIRECTORY))))
 	router.HandleFunc("/", rootHandler)
 	err := http.ListenAndServe(PORT, router)
 	if err != nil {
