@@ -254,7 +254,7 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	http.Redirect(w, r, "/new", 302)
+	http.Redirect(w, r, "/", 302)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
