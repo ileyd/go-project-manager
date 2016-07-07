@@ -451,6 +451,8 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
+		http.Redirect(w, r, "/files/"+appnumber, 302)
+
 	case "GET":
 		b := FilesPage{Files: []Files{}}
 		b.AppNumber = appnumber
