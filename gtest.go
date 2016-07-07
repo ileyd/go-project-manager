@@ -208,7 +208,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(comments), 0)
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), name, html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(comments), false)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -271,10 +271,10 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	if status == true {
-		_, err = db.Query("update tests set done=0 where id=?", html.EscapeString(id))
+		_, err = db.Query("update tests set done=false where id=?", html.EscapeString(id))
 	}
 	if status == false {
-		_, err = db.Query("update tests set done=1 where id=?", html.EscapeString(id))
+		_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
 	}
 
 	if err != nil {
