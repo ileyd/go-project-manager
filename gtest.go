@@ -202,7 +202,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(completion), html.EscapeString(comments), false)
+		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(comments), false)
 		if err != nil {
 			log.Println(err.Error())
 		}
