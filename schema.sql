@@ -1,10 +1,10 @@
 CREATE TABLE `tests` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `customer` longtext,
-  `datereceived` longtext,
   `salesrep` longtext,
   `samples` longtext,
   `requirements` longtext,
+  `datereceived` longtext,
   `duedate` longtext,
   `dispatch` longtext,
   `completion` longtext,
