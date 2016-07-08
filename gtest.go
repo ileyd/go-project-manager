@@ -227,21 +227,23 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	level := cookieValue["level"]
-	if level != "admin" {
+	if level == "admin" {
+		vars := mux.Vars(r)
+		id := vars["id"]
+		db, err := sql.Open("mysql", DATABASE)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
+		_, err = db.Query("delete from tests where id=?", html.EscapeString(id))
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/", 302)
+
+	} else {
 		http.Redirect(w, r, "/login", 302)
 	}
-	vars := mux.Vars(r)
-	id := vars["id"]
-	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	_, err = db.Query("delete from tests where id=?", html.EscapeString(id))
-	if err != nil {
-		log.Println(err)
-	}
-	http.Redirect(w, r, "/", 302)
 }
 func doneHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
@@ -254,35 +256,37 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	level := cookieValue["level"]
-	if level != "admin" {
+	if level == "admin" {
+		vars := mux.Vars(r)
+		id := vars["id"]
+		db, err := sql.Open("mysql", DATABASE)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
+		var status bool
+		err = db.QueryRow("select done from tests where id=?", html.EscapeString(id)).Scan(&status)
+		if err != nil {
+			log.Println(err)
+		}
+		if status == true {
+			_, err = db.Query("update tests set done=false where id=?", html.EscapeString(id))
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		if status == false {
+			_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
+		http.Redirect(w, r, "/", 302)
+
+	} else {
 		http.Redirect(w, r, "/login", 302)
 	}
-	vars := mux.Vars(r)
-	id := vars["id"]
-	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
-	defer db.Close()
-	var status bool
-	err = db.QueryRow("select done from tests where id=?", html.EscapeString(id)).Scan(&status)
-	if err != nil {
-		log.Println(err)
-	}
-	if status == true {
-		_, err = db.Query("update tests set done=false where id=?", html.EscapeString(id))
-		if err != nil {
-			log.Println(err)
-		}
-	}
-	if status == false {
-		_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
-	http.Redirect(w, r, "/", 302)
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
