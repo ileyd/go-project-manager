@@ -92,11 +92,12 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
 	if err != nil {
-		http.Redirect(w, r, "/login", 302)
+		log.Println(err)
 	}
 	level := cookieValue["level"]
 	name := cookieValue["name"]
@@ -131,6 +132,7 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -140,6 +142,7 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 
 	vars := mux.Vars(r)
@@ -165,6 +168,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -220,6 +224,7 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -243,12 +248,15 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 }
 func doneHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
+
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -321,6 +329,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		err = db.QueryRow("select password, name, level from users where email=?", html.EscapeString(email)).Scan(&hashedPassword, &name, &level)
 		if err == sql.ErrNoRows {
 			http.Redirect(w, r, "/login", 303)
+			return
 		}
 		if err != nil {
 			log.Println(err)
@@ -352,6 +361,7 @@ func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	switch r.Method {
 	case "GET":
@@ -390,6 +400,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -399,6 +410,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 
 	switch r.Method {
@@ -438,6 +450,7 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -447,6 +460,7 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 
 	vars := mux.Vars(r)
@@ -521,6 +535,7 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
@@ -530,6 +545,7 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
+		return
 	}
 
 	vars := mux.Vars(r)
