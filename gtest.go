@@ -96,7 +96,7 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
 	if err != nil {
-		log.Println(err)
+		http.Redirect(w, r, "/login", 302)
 	}
 	level := cookieValue["level"]
 	name := cookieValue["name"]
