@@ -94,18 +94,23 @@ func checkErr(err error) {
 	}
 }
 
-func ordersHandler(w http.ResponseWriter, r *http.Request) {
+func getCookieVars(r *http.Request) (string, string, error) {
 	cookie, err := r.Cookie("session")
+	cookieValue := make(map[string]string)
+	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
+	level := cookieValue["level"]
+	name := cookieValue["name"]
+	return name, level, err
+
+}
+
+func ordersHandler(w http.ResponseWriter, r *http.Request) {
+
+	name, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
-
-	level := cookieValue["level"]
-	name := cookieValue["name"]
 
 	db, err := sql.Open("mysql", DATABASE)
 	checkErr(err)
@@ -131,17 +136,12 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func customerHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	_, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
-	level := cookieValue["level"]
+
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
 		return
@@ -164,16 +164,11 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	name, _, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
-
-	name := cookieValue["name"]
 
 	db, err := sql.Open("mysql", DATABASE)
 	checkErr(err)
@@ -214,16 +209,17 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func delHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	_, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
 
-	level := cookieValue["level"]
+	if level != "admin" {
+		http.Redirect(w, r, "/login", 302)
+		return
+	}
+
 	if level == "admin" {
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -235,24 +231,20 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 		checkErr(err)
 
 		http.Redirect(w, r, "/", 302)
-
-	} else {
-		http.Redirect(w, r, "/login", 302)
-		return
 	}
 }
 func doneHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	_, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
-
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
 
-	level := cookieValue["level"]
+	if level != "admin" {
+		http.Redirect(w, r, "/login", 302)
+		return
+	}
+
 	if level == "admin" {
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -277,8 +269,6 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/", 302)
 
-	} else {
-		http.Redirect(w, r, "/login", 302)
 	}
 }
 
@@ -340,11 +330,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session")
+	_, _, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
+
 	switch r.Method {
 	case "GET":
 		err := templates.ExecuteTemplate(w, "company.html", "")
@@ -373,16 +364,12 @@ func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	_, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
 
-	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
 		return
@@ -418,17 +405,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func filesHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	_, _, err := getCookieVars(r)
 	if err != nil {
-		http.Redirect(w, r, "/login", 302)
-		return
-	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
-
-	level := cookieValue["level"]
-	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
@@ -492,16 +470,12 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func putHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
+	_, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
-	cookieValue := make(map[string]string)
-	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	checkErr(err)
 
-	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
 		return
