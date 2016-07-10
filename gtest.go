@@ -88,6 +88,12 @@ type Company struct {
 	Address     string
 }
 
+func checkErr(err error) {
+	if err != nil {
+		log.Println(err.Error())
+	}
+}
+
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -96,16 +102,13 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	level := cookieValue["level"]
 	name := cookieValue["name"]
 
 	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
 	defer db.Close()
 	var rows *sql.Rows
 	if level == "admin" {
@@ -113,9 +116,8 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		rows, err = db.Query("select id, customer, salesrep, samples, requirements, done, datereceived, duedate, dispatch, appnumber, status, comments from tests where salesrep=?", html.EscapeString(name))
 	}
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	b := Page{Tests: []Tests{}}
 	for rows.Next() {
 		res := Tests{}
@@ -148,15 +150,12 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	defer db.Close()
 	b := Company{}
 	err = db.QueryRow("select * from companies where company=?", html.EscapeString(id)).Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
 
 	err = templates.ExecuteTemplate(w, "customers.html", &b)
 	if err != nil {
@@ -172,23 +171,19 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	name := cookieValue["name"]
 
 	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	defer db.Close()
 
 	switch r.Method {
 	case "GET":
 		rows, err := db.Query("select company from companies")
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
 
 		b := New{Company: []Company{}}
 		for rows.Next() {
@@ -208,13 +203,11 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		comments := r.FormValue("comments")
 
 		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		_, err = smt.Exec(html.EscapeString(company), "", name, html.EscapeString(samples), html.EscapeString(requirements), "", "", "", "", "", html.EscapeString(comments), false)
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		http.Redirect(w, r, "/new", 302)
 
 	}
@@ -228,22 +221,19 @@ func delHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	level := cookieValue["level"]
 	if level == "admin" {
 		vars := mux.Vars(r)
 		id := vars["id"]
 		db, err := sql.Open("mysql", DATABASE)
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		defer db.Close()
 		_, err = db.Query("delete from tests where id=?", html.EscapeString(id))
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		http.Redirect(w, r, "/", 302)
 
 	} else {
@@ -260,9 +250,8 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	level := cookieValue["level"]
 	if level == "admin" {
 		vars := mux.Vars(r)
@@ -274,20 +263,16 @@ func doneHandler(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 		var status bool
 		err = db.QueryRow("select done from tests where id=?", html.EscapeString(id)).Scan(&status)
-		if err != nil {
-			log.Println(err)
-		}
+
+		checkErr(err)
+
 		if status == true {
 			_, err = db.Query("update tests set done=false where id=?", html.EscapeString(id))
-			if err != nil {
-				log.Println(err)
-			}
+			checkErr(err)
 		}
 		if status == false {
 			_, err = db.Query("update tests set done=true where id=?", html.EscapeString(id))
-			if err != nil {
-				log.Println(err)
-			}
+			checkErr(err)
 		}
 
 		http.Redirect(w, r, "/", 302)
@@ -320,9 +305,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 		db, err := sql.Open("mysql", DATABASE)
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		defer db.Close()
 		var hashedPassword []byte
 		var level, name string
@@ -331,10 +315,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/login", 303)
 			return
 		}
-		if err != nil {
-			log.Println(err)
+		checkErr(err)
 
-		}
 		err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 		if err == nil {
 			value := map[string]string{
@@ -376,21 +358,15 @@ func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
 		phone := r.FormValue("phone")
 		address := r.FormValue("address")
 		db, err := sql.Open("mysql", DATABASE)
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		defer db.Close()
 		smt, err := db.Prepare("insert into companies(email, company, contactname, phone, address) values(?, ?, ?, ?, ?)")
-		if err != nil {
-			log.Println(err)
-		}
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		_, err = smt.Exec(html.EscapeString(email), html.EscapeString(company), html.EscapeString(name), html.EscapeString(phone), html.EscapeString(address))
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		http.Redirect(w, r, "/", 302)
 
 	}
@@ -404,9 +380,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
@@ -425,22 +400,18 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		name := r.FormValue("name")
 		level := r.FormValue("level")
 		db, err := sql.Open("mysql", DATABASE)
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		defer db.Close()
 		smt, err := db.Prepare("insert into users(email, password, name, level) values(?, ?, ?, ?)")
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		_, err = smt.Exec(html.EscapeString(email), hashedPassword, html.EscapeString(name), html.EscapeString(level))
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		http.Redirect(w, r, "/login", 302)
 
 	}
@@ -454,9 +425,8 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
@@ -466,16 +436,14 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	appnumber := vars["appnumber"]
 	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	defer db.Close()
 	switch r.Method {
 	case "POST":
 		reader, err := r.MultipartReader()
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		for {
 			part, err := reader.NextPart()
 			if err == io.EOF {
@@ -488,24 +456,18 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 
 			file := part.FileName()
 			dst, err := os.Create(UPDIRECTORY + file)
-			if err != nil {
-				log.Println(err)
-			}
+			checkErr(err)
+
 			defer dst.Close()
 			// save uploaded data to created file
 			_, err = io.Copy(dst, part)
-			if err != nil {
-				log.Println(err)
-			}
-			smt, err := db.Prepare("insert into files(file, appnumber) values(?, ?)")
-			if err != nil {
-				log.Println(err)
-			}
-			_, err = smt.Exec(file, html.EscapeString(appnumber))
-			if err != nil {
-				log.Println(err)
-			}
+			checkErr(err)
 
+			smt, err := db.Prepare("insert into files(file, appnumber) values(?, ?)")
+			checkErr(err)
+
+			_, err = smt.Exec(file, html.EscapeString(appnumber))
+			checkErr(err)
 		}
 
 		http.Redirect(w, r, "/files/"+appnumber, 302)
@@ -514,9 +476,7 @@ func filesHandler(w http.ResponseWriter, r *http.Request) {
 		b := FilesPage{Files: []Files{}}
 		b.AppNumber = appnumber
 		rows, err := db.Query("select id, file, appnumber from files where appnumber=?", html.EscapeString(appnumber))
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
 
 		for rows.Next() {
 			res := Files{}
@@ -539,9 +499,8 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cookieValue := make(map[string]string)
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	level := cookieValue["level"]
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
@@ -551,9 +510,8 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	db, err := sql.Open("mysql", DATABASE)
-	if err != nil {
-		log.Println(err)
-	}
+	checkErr(err)
+
 	defer db.Close()
 	switch r.Method {
 	case "POST":
@@ -569,21 +527,18 @@ func putHandler(w http.ResponseWriter, r *http.Request) {
 		comments := r.FormValue("comments")
 
 		smt, err := db.Prepare("Update tests set customer=?, datereceived=?, salesrep=?, samples=?, requirements=?, duedate=?, dispatch=?, appnumber=?, status=?, comments=? where id=?")
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		_, err = smt.Exec(html.EscapeString(company), html.EscapeString(datereceived), html.EscapeString(salesrep), html.EscapeString(samples), html.EscapeString(requirements), html.EscapeString(duedate), html.EscapeString(dispatch), html.EscapeString(appnumber), html.EscapeString(status), html.EscapeString(comments), html.EscapeString(id))
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		http.Redirect(w, r, "/", 302)
 
 	case "GET":
 		res := Tests{}
 		rows, err := db.Query("select id, customer, datereceived, salesrep, samples, requirements, duedate, dispatch, appnumber, status, comments, done from tests where id=?", html.EscapeString(id))
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
+
 		for rows.Next() {
 			rows.Scan(&res.ID, &res.Customer, &res.DateReceived, &res.SalesRep, &res.Samples, &res.Requirements, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments, &res.Done)
 		}
