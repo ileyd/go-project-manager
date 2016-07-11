@@ -1,3 +1,4 @@
+// package go-project-manager is a simple project manager webapp
 package main
 
 import (
@@ -9,17 +10,18 @@ import (
 	"net/http"
 	"os"
 
+	// bycrpt package for password hashing
 	"golang.org/x/crypto/bcrypt"
-
+	// route handling
 	"github.com/gorilla/mux"
+	// securecookie handling
 	"github.com/gorilla/securecookie"
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
-	// ADDRESS that tracker will return links for
-	ADDRESS     = "http://localhost:9900"
+	// UPDIRECTORY upload directory
 	UPDIRECTORY = "/tmp/"
 	// PORT that tracker will listen on
 	PORT = ":9900"
@@ -33,52 +35,75 @@ const (
 	DATABASE = USERNAME + ":" + PASS + "@/" + NAME + "?charset=utf8"
 )
 
+// templates global variable
 var templates = template.Must(template.ParseFiles("templates/index.html", "templates/login.html", "templates/modify.html", "templates/register.html", "templates/new.html", "templates/customers.html", "templates/company.html", "templates/files.html"))
+
+// generate new random cookie keys
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
 	securecookie.GenerateRandomKey(32),
 )
 
+// Tests struct contains all the important tests details for table generation
 type Tests struct {
-	ID           string `json:"id"`
-	Customer     string `json:"customer"`
+	// ID datebase
+	ID string `json:"id"`
+	// Customer name
+	Customer string `json:"customer"`
+	// DateReceived date that order was received in 2016-02-01 format
 	DateReceived string `json:"datereceived"`
-	SalesRep     string `json:"salesrep"`
-	Samples      string `json:"samples"`
+	// SalesRep name of sales rep
+	SalesRep string `json:"salesrep"`
+	// Samples details
+	Samples string `json:"samples"`
+	// Requirements details
 	Requirements string `json:"requirements"`
-	DueDate      string `json:"duedate"`
-	Dispatch     string `json:"dispatch"`
-	AppNumber    string `json:"appnumber"`
-	Status       string `json:"status"`
-	Comments     string `json:"comments"`
-	Done         bool   `json:"done"`
+	// DueDate in 2016-02-01 format
+	DueDate string `json:"duedate"`
+	// Dispatch in 2016-02-01 format
+	Dispatch string `json:"dispatch"`
+	// AppNumber appnumber
+	AppNumber string `json:"appnumber"`
+	// Status comments
+	Status string `json:"status"`
+	// Comments
+	Comments string `json:"comments"`
+	// Done bool variable for storing if the project is done
+	Done bool `json:"done"`
 }
 
+// Page struct with a Tests array
 type Page struct {
 	Tests []Tests `json:"data"`
 }
 
+// New Sturct with company array
 type New struct {
 	Company []Company `json:"data"`
 }
 
+// Files struct details
 type Files struct {
 	ID        string
 	Name      string
 	AppNumber string
 }
 
+// FilesPage struct
 type FilesPage struct {
 	Files     []Files
 	AppNumber string
 }
 
+// Users Struct details
 type Users struct {
 	ID       string
 	Email    string
 	Password string
 	Level    string
 }
+
+// Company struct details
 type Company struct {
 	ID          string
 	Email       string
@@ -88,40 +113,52 @@ type Company struct {
 	Address     string
 }
 
+// checkErr function for error handling
 func checkErr(err error) {
 	if err != nil {
 		log.Println(err.Error())
 	}
 }
 
+// getCookieVars returns name level and error
 func getCookieVars(r *http.Request) (string, string, error) {
 	cookie, err := r.Cookie("session")
 	cookieValue := make(map[string]string)
 	if err != nil {
 		return "", "", err
 	}
+
 	err = cookieHandler.Decode("session", cookie.Value, &cookieValue)
 	if err != nil {
 		return "", "", err
 	}
+	// read cookie variables into variables
 	level := cookieValue["level"]
 	name := cookieValue["name"]
+
+	// return cookie variables
 	return name, level, nil
 
 }
 
+// ordersHandler generates the orders page
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
 
+	// get name and level from cookies
 	name, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
 
+	// open db connection
 	db, err := sql.Open("mysql", DATABASE)
 	checkErr(err)
+
 	defer db.Close()
 	var rows *sql.Rows
+
+	// Query database based upon user level
 	if level == "admin" {
 		rows, err = db.Query("select id, customer, salesrep, samples, requirements, done, datereceived, duedate, dispatch, appnumber, status, comments from tests")
 	} else {
@@ -129,35 +166,51 @@ func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	checkErr(err)
 
+	// setup Page struct
 	b := Page{Tests: []Tests{}}
+
+	// read results into page struct
 	for rows.Next() {
+		// setup Tests struct
 		res := Tests{}
 		rows.Scan(&res.ID, &res.Customer, &res.SalesRep, &res.Samples, &res.Requirements, &res.Done, &res.DateReceived, &res.DueDate, &res.Dispatch, &res.AppNumber, &res.Status, &res.Comments)
+		// append tests struct to Page struct
 		b.Tests = append(b.Tests, res)
 	}
 
+	// generate index page
 	err = templates.ExecuteTemplate(w, "index.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
+// customerHandler generates the customers page
 func customerHandler(w http.ResponseWriter, r *http.Request) {
+	// check if user has a valid cookies
 	_, _, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
 
+	// read mux variables into variable
 	vars := mux.Vars(r)
 	id := vars["id"]
+	// open db connection
 	db, err := sql.Open("mysql", DATABASE)
 	checkErr(err)
 
 	defer db.Close()
+
+	// prepare Company struct
 	b := Company{}
+
+	// Query companies database table
 	err = db.QueryRow("select * from companies where company=?", html.EscapeString(id)).Scan(&b.ID, &b.Email, &b.Company, &b.ContactName, &b.Phone, &b.Address)
 	checkErr(err)
 
+	// generate customers page with customer details
 	err = templates.ExecuteTemplate(w, "customers.html", &b)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -165,12 +218,14 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newHandler(w http.ResponseWriter, r *http.Request) {
+	// get username
 	name, _, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
 
+	// open db connection
 	db, err := sql.Open("mysql", DATABASE)
 	checkErr(err)
 
@@ -178,44 +233,58 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
+		// query database for all company names
 		rows, err := db.Query("select company from companies")
 		checkErr(err)
 
+		// prepare New struct
 		b := New{Company: []Company{}}
+
+		// read database query results
 		for rows.Next() {
+			// prepare Company struct
 			res := Company{}
+			// scan company name into company struct
 			rows.Scan(&res.Company)
+			//append company struct to New struct
 			b.Company = append(b.Company, res)
 		}
 
+		// generate a list of companies for the user to select
 		err = templates.ExecuteTemplate(w, "new.html", &b)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	case "POST":
+		// read form results
 		company := r.FormValue("company")
 		samples := r.FormValue("samples")
 		requirements := r.FormValue("requirements")
 		comments := r.FormValue("comments")
 
+		// prepare insert statement
 		smt, err := db.Prepare("insert into tests(customer, datereceived, salesrep, samples, requirements, duedate, dispatch, completion, appnumber, status, comments, done) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 		checkErr(err)
 
+		// Execute query with escaped form variables
 		_, err = smt.Exec(html.EscapeString(company), "", name, html.EscapeString(samples), html.EscapeString(requirements), "", "", "", "", "", html.EscapeString(comments), false)
 		checkErr(err)
 
+		// redirect to /new page
 		http.Redirect(w, r, "/new", 302)
 
 	}
 }
 
 func delHandler(w http.ResponseWriter, r *http.Request) {
+	// get user level
 	_, level, err := getCookieVars(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", 302)
 		return
 	}
 
+	// if user does not equal admin redirect to login page
 	if level != "admin" {
 		http.Redirect(w, r, "/login", 302)
 		return
