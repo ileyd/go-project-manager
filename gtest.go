@@ -365,17 +365,6 @@ func newcompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	_, level, err := getCookieVars(r)
-	if err != nil {
-		http.Redirect(w, r, "/login", 302)
-		return
-	}
-
-	if level != "admin" {
-		http.Redirect(w, r, "/login", 302)
-		return
-	}
-
 	switch r.Method {
 	case "GET":
 		err := templates.ExecuteTemplate(w, "register.html", "")
