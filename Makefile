@@ -11,7 +11,6 @@ build:
 install:
 	go get github.com/go-sql-driver/mysql 
 	go get github.com/dchest/uniuri 
-	go get github.com/BurntSushi/toml
 
 test: install
 	go test $(GOFLAGS) ./...
