@@ -74,43 +74,60 @@ type Tests struct {
 
 // Page struct with a Tests array
 type Page struct {
+	// Tests struct array
 	Tests []Tests `json:"data"`
 }
 
 // New Sturct with company array
 type New struct {
+	// Company struct array
 	Company []Company `json:"data"`
 }
 
 // Files struct details
 type Files struct {
-	ID        string
-	Name      string
+	// ID db id
+	ID string
+	// Name filename
+	Name string
+	// AppNumber project appnumber
 	AppNumber string
 }
 
 // FilesPage struct
 type FilesPage struct {
-	Files     []Files
+	// Files struct array
+	Files []Files
+	// AppNumber project appnumber
 	AppNumber string
 }
 
 // Users Struct details
 type Users struct {
-	ID       string
-	Email    string
+	// ID db id
+	ID string
+	// Email user email
+	Email string
+	// Password user password
 	Password string
-	Level    string
+	// Level user level
+	Level string
 }
 
 // Company struct details
 type Company struct {
-	ID          string
-	Email       string
-	Company     string
+	// ID db id
+	ID string
+	// Email company email
+	Email string
+	// Company name
+	Company string
+	// ContactName for company
 	ContactName string
-	Phone       string
-	Address     string
+	// Phone number for company
+	Phone string
+	// Address for company
+	Address string
 }
 
 // checkErr function for error handling
