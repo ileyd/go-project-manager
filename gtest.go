@@ -1,5 +1,5 @@
 // package go-project-manager is a simple project manager webapp
-package main
+package gproject
 
 import (
 	"database/sql"
